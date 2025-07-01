@@ -2,7 +2,7 @@
 
 A modern Tic-Tac-Toe game built with [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/), featuring a beautiful neomorphic design and a live scoreboard for Player X, Player O, and draws.
 
-![Screenshot](public/screenshot.png.png)
+![Screenshot](public/screenshot.png)
 
 ## Features
 
