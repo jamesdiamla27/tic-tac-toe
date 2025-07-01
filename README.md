@@ -31,7 +31,7 @@ A modern Tic-Tac-Toe game built with [Next.js](https://nextjs.org/) and [Tailwin
    # or
    yarn dev
    ```
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to play.
+4. Open [https://tic-tac-toe-diamla.vercel.app](https://tic-tac-toe-diamla.vercel.app) in your browser to play.
 
 ## How to Play
 - Click any empty cell to place your mark (X or O).
