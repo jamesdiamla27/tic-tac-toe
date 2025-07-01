@@ -1,103 +1,108 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
+
+const emptyBoard = Array(3).fill(null).map(() => Array(3).fill(null));
+
+function getWinner(board: string[][]) {
+  // Rows, columns, diagonals
+  for (let i = 0; i < 3; i++) {
+    if (board[i][0] && board[i][0] === board[i][1] && board[i][1] === board[i][2]) return board[i][0];
+    if (board[0][i] && board[0][i] === board[1][i] && board[1][i] === board[2][i]) return board[0][i];
+  }
+  if (board[0][0] && board[0][0] === board[1][1] && board[1][1] === board[2][2]) return board[0][0];
+  if (board[0][2] && board[0][2] === board[1][1] && board[1][1] === board[2][0]) return board[0][2];
+  return null;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [board, setBoard] = useState(emptyBoard);
+  const [xIsNext, setXIsNext] = useState(true);
+  const [score, setScore] = useState({ X: 0, O: 0, draws: 0 });
+  const [gameOver, setGameOver] = useState(false);
+  const winner = getWinner(board);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  React.useEffect(() => {
+    if (winner && !gameOver) {
+      setScore((prev) => ({ ...prev, [winner]: prev[winner as "X" | "O"] + 1 }));
+      setGameOver(true);
+    } else if (!winner && board.flat().every(Boolean) && !gameOver) {
+      setScore((prev) => ({ ...prev, draws: prev.draws + 1 }));
+      setGameOver(true);
+    }
+  }, [winner, board, gameOver]);
+
+  function handleClick(row: number, col: number) {
+    if (board[row][col] || winner || gameOver) return;
+    const newBoard = board.map((r, i) =>
+      r.map((cell, j) => (i === row && j === col ? (xIsNext ? "X" : "O") : cell))
+    );
+    setBoard(newBoard);
+    setXIsNext(!xIsNext);
+  }
+
+  function handleReset() {
+    setBoard(emptyBoard);
+    setXIsNext(true);
+    setGameOver(false);
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f5f6fa] text-[#222]">
+      <h1 className="text-3xl font-bold mb-4">Tic-Tac-Toe</h1>
+      {/* Scoreboard */}
+      <div className="flex gap-8 mb-8 p-4 rounded-2xl shadow" style={{ background: '#fff', boxShadow: '4px 4px 16px #e0e0e0, -4px -4px 16px #ffffff' }}>
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-semibold">Player X</span>
+          <span className="text-2xl font-bold text-blue-600">{score.X}</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-semibold">Draws</span>
+          <span className="text-2xl font-bold text-gray-500">{score.draws}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-semibold">Player O</span>
+          <span className="text-2xl font-bold text-pink-600">{score.O}</span>
+        </div>
+      </div>
+      <div
+        className="grid grid-cols-3 grid-rows-3 gap-6 p-6 rounded-3xl"
+        style={{
+          background: '#f5f6fa',
+          boxShadow:
+            "8px 8px 24px #e0e0e0, -8px -8px 24px #ffffff, inset 2px 2px 6px #e2e8f0, inset -2px -2px 6px #fff",
+        }}
+      >
+        {board.map((row, i) =>
+          row.map((cell, j) => (
+            <button
+              key={`${i}-${j}`}
+              className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center text-3xl font-bold rounded-2xl bg-[#fff] transition-all select-none hover:scale-105 focus:outline-none"
+              style={{
+                boxShadow:
+                  "4px 4px 12px #e0e0e0, -4px -4px 12px #ffffff, inset 1px 1px 3px #e2e8f0, inset -1px -1px 3px #fff",
+              }}
+              onClick={() => handleClick(i, j)}
+              aria-label={`Cell ${i + 1},${j + 1}`}
+            >
+              {cell}
+            </button>
+          ))
+        )}
+      </div>
+      <div className="mt-8 text-xl min-h-[2rem]">
+        {winner
+          ? `Winner: ${winner}`
+          : board.flat().every(Boolean)
+          ? "It's a draw!"
+          : `Next: ${xIsNext ? "X" : "O"}`}
+      </div>
+      <button
+        className="mt-6 px-6 py-2 rounded-xl bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition"
+        onClick={handleReset}
+      >
+        Reset
+      </button>
     </div>
   );
 }
