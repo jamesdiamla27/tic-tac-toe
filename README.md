@@ -42,7 +42,3 @@ A modern Tic-Tac-Toe game built with [Next.js](https://nextjs.org/) and [Tailwin
 ## Customization
 - The favicon and logo can be changed by replacing `public/logo.png`.
 - The board and UI use a light neomorphic theme by default.
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
